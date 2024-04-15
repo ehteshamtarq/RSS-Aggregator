@@ -74,6 +74,6 @@ func main() {
 	const collectionInterval = time.Minute
 	go startScraping(dbQueries, collectionConcurrency, collectionInterval)
 
-	http.ListenAndServe(":3000", httplogger.Golog(router))
+	http.ListenAndServe("", httplogger.Golog(router))
 
 }
