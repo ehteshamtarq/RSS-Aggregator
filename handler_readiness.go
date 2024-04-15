@@ -7,6 +7,6 @@ func handlerReadiness(w http.ResponseWriter, r *http.Request) {
 
 }
 
-func handleErr(w http.ResponseWriter, r *http.Request) {
+func handlerErr(w http.ResponseWriter, r *http.Request) {
 	respondWithError(w, http.StatusInternalServerError, "Internal Server Error")
 }
