@@ -2,10 +2,10 @@ package main
 
 import (
 	"database/sql"
-	"fmt"
 	"log"
 	"net/http"
 	"os"
+	"time"
 
 	"github.com/ehteshamtarq/RSS-Aggregator.git/internal/database"
 	"github.com/go-chi/chi/v5"
@@ -20,7 +20,6 @@ type apiConfig struct {
 }
 
 func main() {
-	fmt.Println("Hello World!")
 	godotenv.Load(".env")
 
 	port := os.Getenv("PORT")
@@ -64,10 +63,16 @@ func main() {
 	v1Router.Post("/feed_follows", apiCfg.middlewareAuth(apiCfg.handlerFeedFollowCreate))
 	v1Router.Delete("/feed_follows/{feedFollowID}", apiCfg.middlewareAuth(apiCfg.handlerFeedFollowDelete))
 
+	v1Router.Get("/posts", apiCfg.middlewareAuth(apiCfg.handlerPostsGet))
+
 	v1Router.Get("/healthz", handlerReadiness)
 	v1Router.Get("/err", handlerErr)
 
 	router.Mount("/v1", v1Router)
+
+	const collectionConcurrency = 10
+	const collectionInterval = time.Minute
+	go startScraping(dbQueries, collectionConcurrency, collectionInterval)
 
 	http.ListenAndServe(":3000", httplogger.Golog(router))
 
